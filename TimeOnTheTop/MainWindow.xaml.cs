@@ -15,88 +15,87 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace TimeOnTheTop
+namespace TimeOnTheTop;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow
+    public MainWindow()
     {
-        public MainWindow()
+        // first start
+        if (App.FirstStart)
         {
-            // first start
-            if (App.FirstStart)
+            ConfigWindow window = new();
+            window.Show();
+        }
+
+        // initialize window
+        InitializeComponent();
+        Width = SystemParameters.PrimaryScreenWidth;
+        ApplyTextStyle();
+
+        // timer
+        var config = App.Config;
+        DispatcherTimer timer = new(
+            TimeSpan.FromMilliseconds(config.RefreshDelay),
+            DispatcherPriority.Render,
+            (_, _) =>
             {
-                ConfigWindow window = new();
-                window.Show();
-            }
-
-            // initialize window
-            InitializeComponent();
-            Width = SystemParameters.PrimaryScreenWidth;
-            ApplyTextStyle();
-
-            // timer
-            var config = App.Config;
-            DispatcherTimer timer = new(
-                TimeSpan.FromMilliseconds(config.RefreshDelay),
-                DispatcherPriority.Render,
-                (_, _) =>
+                // update style
+                if (App.ConfigChanged)
                 {
-                    // update style
-                    if (App.ConfigChanged)
-                    {
-                        ApplyTextStyle();
-                        App.ConfigChanged = false;
-                    }
-                    // update time
-                    var time = DateTime.Now;
-                    var text = time.ToString(config.Expression);
-                    if (TimeText.Text != text) TimeText.Text = text;
-                },
-                Dispatcher.CurrentDispatcher);
-            timer.Start();
-        }
+                    ApplyTextStyle();
+                    App.ConfigChanged = false;
+                }
+                // update time
+                var time = DateTime.Now;
+                var text = time.ToString(config.Expression);
+                if (TimeText.Text != text) TimeText.Text = text;
+            },
+            Dispatcher.CurrentDispatcher);
+        timer.Start();
+    }
 
-        private void ApplyTextStyle()
-        {
-            var config = App.Config;
+    private void ApplyTextStyle()
+    {
+        var config = App.Config;
 
-            // text
-            TimeText.FontSize = config.FontSize;
-            TimeText.FontFamily = new FontFamily(config.FontFamily);
-            TimeText.FontWeight = FontWeight.FromOpenTypeWeight(config.FontWeight);
-            TimeText.TextAlignment = config.TextAlignment;
+        // text
+        TimeText.FontSize = config.FontSize;
+        TimeText.FontFamily = new FontFamily(config.FontFamily);
+        TimeText.FontWeight = FontWeight.FromOpenTypeWeight(config.FontWeight);
+        TimeText.TextAlignment = config.TextAlignment;
 
-            // positions
-            Height = config.MaxHeight;
-            TimeText.Padding = new Thickness(config.Padding);
+        // positions
+        Height = config.MaxHeight;
+        TimeText.Padding = new Thickness(config.Padding);
 
-            // color
-            if (config.EnableGradient)
-                TimeText.Foreground = new LinearGradientBrush(config.Color1, config.Color2, 0);
-            else
-                TimeText.Foreground = new SolidColorBrush(config.Color1);
+        // color
+        if (config.EnableGradient)
+            TimeText.Foreground = new LinearGradientBrush(config.Color1, config.Color2, 0);
+        else
+            TimeText.Foreground = new SolidColorBrush(config.Color1);
 
-            // shadow
-            if (config.EnableShadow)
-                TimeText.Effect = new DropShadowEffect()
-                {
-                    BlurRadius = config.ShadowBlurRadius,
-                    Color = config.ShadowColor,
-                    Opacity = config.ShadowOpacity,
-                    Direction = 0,
-                    ShadowDepth = config.ShadowDepth
-                };
-            else
-                TimeText.Effect = null;
-        }
+        // shadow
+        if (config.EnableShadow)
+            TimeText.Effect = new DropShadowEffect()
+            {
+                BlurRadius = config.ShadowBlurRadius,
+                Color = config.ShadowColor,
+                Opacity = config.ShadowOpacity,
+                Direction = 0,
+                ShadowDepth = config.ShadowDepth
+            };
+        else
+            TimeText.Effect = null;
+    }
 
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            base.OnSourceInitialized(e);
-            var hWnd = new WindowInteropHelper(this).Handle;
-            WindowHelper.SetWindowExTransparent(hWnd);
-        }
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        var hWnd = new WindowInteropHelper(this).Handle;
+        WindowHelper.SetWindowExTransparent(hWnd);
     }
 }

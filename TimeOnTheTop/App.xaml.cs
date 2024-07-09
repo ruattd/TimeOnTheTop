@@ -6,82 +6,80 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
 
-namespace TimeOnTheTop
+namespace TimeOnTheTop;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App
+    private static string _configFile = "";
+
+    internal static string ExecutableFilePath = "";
+    internal static Config Config = new();
+    internal static bool FirstStart = false;
+    internal static bool ConfigChanged = false;
+
+    internal static void SaveConfig()
     {
-        private static string _configFile = "";
-
-        internal static string ExecutableFilePath = "";
-        internal static Config Config = new();
-        internal static bool FirstStart = false;
-        internal static bool ConfigChanged = false;
-
-        internal static void SaveConfig()
+        Task.Run(() =>
         {
-            Task.Run(() =>
-            {
-                var jsonText = JsonSerializer.Serialize(Config);
-                File.WriteAllText(_configFile, jsonText);
-            });
-        }
+            var jsonText = JsonSerializer.Serialize(Config);
+            File.WriteAllText(_configFile, jsonText);
+        });
+    }
 
-        public App()
+    public App()
+    {
+        // get config file path
+        var executableFile = Environment.ProcessPath;
+        if (executableFile == null) OnInitError("Config", "Executable path not available");
+        executableFile = Path.GetFullPath(executableFile!);
+        ExecutableFilePath = executableFile;
+        var configDir = Path.GetDirectoryName(executableFile)!;
+        var configFile = Path.Combine(configDir, "TimeOnTheTop.json");
+        _configFile = configFile;
+
+        // load config
+        try
         {
-            // get config file path
-            var executableFile = Environment.ProcessPath;
-            if (executableFile == null) OnInitError("Config", "Executable path not available");
-            executableFile = Path.GetFullPath(executableFile!);
-            ExecutableFilePath = executableFile;
-            var configDir = Path.GetDirectoryName(executableFile)!;
-            var configFile = Path.Combine(configDir, "TimeOnTheTop.json");
-            _configFile = configFile;
-
-            // load config
-            try
+            if (!File.Exists(configFile))
             {
-                if (!File.Exists(configFile))
-                {
-                    FirstStart = true;
-                    File.Create(configFile).Close();
-                    SaveConfig();
-                }
-                else
-                {
-                    var jsonText = File.ReadAllText(configFile);
-                    var deserializedConfig = JsonSerializer.Deserialize<Config>(jsonText);
-                    if (deserializedConfig == null) OnInitError("Config", "Invalid config content");
-                    Config = deserializedConfig!;
-                }
+                FirstStart = true;
+                File.Create(configFile).Close();
+                SaveConfig();
             }
-            catch (Exception e)
+            else
             {
-                OnInitError("Config", "Error while reading/creating config file:\n" + e);
-                throw;
+                var jsonText = File.ReadAllText(configFile);
+                var deserializedConfig = JsonSerializer.Deserialize<Config>(jsonText);
+                if (deserializedConfig == null) OnInitError("Config", "Invalid config content");
+                Config = deserializedConfig!;
             }
         }
-
-        private static void OnInitError(string type, string message)
+        catch (Exception e)
         {
-            Window owner = new()
-            {
-                AllowsTransparency = true,
-                ShowInTaskbar = false,
-                WindowStyle = WindowStyle.None,
-                Background = Brushes.Transparent
-            };
-            owner.Show();
-            MessageBox.Show(owner,
-                "[" + type + "] " + message,
-                "初始化出错 - Time on the TOP",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            Current.Shutdown();
+            OnInitError("Config", "Error while reading/creating config file:\n" + e);
+            throw;
         }
+    }
 
+    private static void OnInitError(string type, string message)
+    {
+        Window owner = new()
+        {
+            AllowsTransparency = true,
+            ShowInTaskbar = false,
+            WindowStyle = WindowStyle.None,
+            Background = Brushes.Transparent
+        };
+        owner.Show();
+        MessageBox.Show(owner,
+            "[" + type + "] " + message,
+            "初始化出错 - Time on the TOP",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+        Current.Shutdown();
     }
 
 }
