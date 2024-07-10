@@ -2,6 +2,7 @@
 
 namespace TimeOnTheTop;
 
+#pragma warning disable all
 public static partial class WindowHelper
 {
     const int WS_EX_TRANSPARENT = 0x00000020;
