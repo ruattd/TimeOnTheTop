@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Win32;
 
 namespace TimeOnTheTop;
 
@@ -19,6 +20,16 @@ public partial class App
     internal static Config Config = new();
     internal static bool FirstStart = false;
     internal static bool ConfigChanged = false;
+    internal static RegistryKey StartupKey;
+
+    static App()
+    {
+        // get startup registry key
+        var key = Registry.CurrentUser
+            .OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        if (key == null) OnInitError("Registry", "Failed to get startup registry key");
+        StartupKey = key!;
+    }
 
     internal static void SaveConfig()
     {
@@ -59,12 +70,12 @@ public partial class App
         }
         catch (Exception e)
         {
-            OnInitError("Config", "Error while reading/creating config file:\n" + e);
+            OnInitError("Config", $"Error while reading/creating config file:\n{e}");
             throw;
         }
     }
 
-    private static void OnInitError(string type, string message)
+    internal static void OnInitError(string type, string message)
     {
         Window owner = new()
         {

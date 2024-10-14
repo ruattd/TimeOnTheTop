@@ -23,22 +23,44 @@ public partial class ConfigWindow
     public ConfigWindow()
     {
         InitializeComponent();
-        if (App.FirstStart)
+        if (App.FirstStart) CheckAndSetStartup();
+    }
+
+    private async void CheckAndSetStartup()
+    {
+        var order = -1;
+        var isSet = await Task.Run(() =>
         {
-            // add startup registry
-            var result = MessageBox.Show(
-                this,
-                "是否向注册表添加启动项？",
-                "Time on the TOP",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            // check
+            var r = false;
+            foreach (var name in App.StartupKey.GetValueNames())
             {
-                Registry.CurrentUser
-                    .OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true)
-                    ?.SetValue("Time on the TOP", App.ExecutableFilePath, RegistryValueKind.String);
+                if (!name.StartsWith("TimeOnTheTop")) continue;
+                if (App.StartupKey.GetValue(name) is string value && value == App.ExecutableFilePath)
+                {
+                    r = true;
+                    break;
+                }
+                if (name.Length > 12)
+                {
+                    var ns = name[12..];
+                    if (int.TryParse(ns, out var n) && n > order) order = n;
+                }
             }
-            App.FirstStart = false;
+            return r;
+        });
+        if (isSet) return;
+        // add startup registry
+        var result = MessageBox.Show(
+            this,
+            "是否向注册表添加启动项？",
+            "Time on the TOP",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
+        {
+            App.StartupKey.SetValue($"TimeOnTheTop{order+1}", App.ExecutableFilePath, RegistryValueKind.String);
         }
+        App.FirstStart = false;
     }
 }
