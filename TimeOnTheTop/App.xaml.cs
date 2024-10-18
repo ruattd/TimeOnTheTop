@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.Win32;
+using Brushes = System.Windows.Media.Brushes;
+using MessageBox = System.Windows.MessageBox;
 
 namespace TimeOnTheTop;
 
@@ -15,12 +18,20 @@ namespace TimeOnTheTop;
 public partial class App
 {
     private static string _configFile = "";
+    private static NotifyIcon? _notifyIcon;
+
+    internal const string AppName = "Time on the TOP";
 
     internal static string ExecutableFilePath = "";
+
     internal static Config Config = new();
     internal static bool FirstStart = false;
     internal static bool ConfigChanged = false;
+
     internal static RegistryKey StartupKey;
+
+    internal static bool AppLightTheme;
+    internal static bool SystemLightTheme;
 
     static App()
     {
@@ -73,6 +84,27 @@ public partial class App
             OnInitError("Config", $"Error while reading/creating config file:\n{e}");
             throw;
         }
+
+        // create notify icon
+        _notifyIcon = new NotifyIcon
+        {
+            Text = AppName,
+            Visible = true
+        };
+        
+        // detect system theme changes
+        OnSystemThemeChanged();
+        SystemEvents.UserPreferenceChanged += (_, _) => OnSystemThemeChanged();
+    }
+
+    private static void OnSystemThemeChanged()
+    {
+        // get system theme config
+        var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+        if (key?.GetValue("AppsUseLightTheme") is int appLight) AppLightTheme = appLight != 0;
+        if (key?.GetValue("SystemUsesLightTheme") is int sysLight) SystemLightTheme = sysLight != 0;
+        // update notify icon
+        if (_notifyIcon != null) _notifyIcon.Icon = Icon.ExtractAssociatedIcon(SystemLightTheme ? "assets/appicon.ico" : "assets/appicon_dark.ico");
     }
 
     internal static void OnInitError(string type, string message)
@@ -86,10 +118,16 @@ public partial class App
         };
         owner.Show();
         MessageBox.Show(owner,
-            "[" + type + "] " + message,
-            "初始化出错 - Time on the TOP",
+            $"[{type}] {message}",
+            $"初始化出错 - {AppName}",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
+        Current.Shutdown();
+    }
+
+    internal static void OnExit()
+    {
+        if (_notifyIcon != null) _notifyIcon.Visible = false;
         Current.Shutdown();
     }
 

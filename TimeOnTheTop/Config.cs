@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Color = System.Windows.Media.Color;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace TimeOnTheTop;
 

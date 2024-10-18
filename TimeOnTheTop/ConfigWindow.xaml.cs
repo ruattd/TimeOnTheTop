@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using MessageBox = System.Windows.MessageBox;
 
 namespace TimeOnTheTop;
 
@@ -51,8 +52,7 @@ public partial class ConfigWindow
         });
         if (isSet) return;
         // add startup registry
-        var result = MessageBox.Show(
-            this,
+        var result = MessageBox.Show(this,
             "是否向注册表添加启动项？",
             "Time on the TOP",
             MessageBoxButton.YesNo,
