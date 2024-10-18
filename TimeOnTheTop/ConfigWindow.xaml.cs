@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,14 +18,33 @@ using MessageBox = System.Windows.MessageBox;
 namespace TimeOnTheTop;
 
 /// <summary>
-/// ConfigWindow.xaml 的交互逻辑
+/// Interaction logic for ConfigWindow.xaml
 /// </summary>
 public partial class ConfigWindow
 {
     public ConfigWindow()
     {
         InitializeComponent();
+        Title = $"设置 - {App.AppName}";
         if (App.FirstStart) CheckAndSetStartup();
+    }
+
+    private static ConfigWindow? _current;
+
+    public static void ActiveOrCreate()
+    {
+        if (_current == null)
+        {
+            _current = new ConfigWindow();
+            _current.Show();
+        }
+        else _current.Activate();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        _current = null;
     }
 
     private async void CheckAndSetStartup()
@@ -54,7 +74,7 @@ public partial class ConfigWindow
         // add startup registry
         var result = MessageBox.Show(this,
             "是否向注册表添加启动项？",
-            "Time on the TOP",
+            App.AppName,
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
         if (result == MessageBoxResult.Yes)

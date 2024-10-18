@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -28,12 +29,12 @@ public partial class MainWindow
         // first start
         if (App.FirstStart)
         {
-            ConfigWindow window = new();
-            window.Show();
+            ConfigWindow.ActiveOrCreate();
         }
 
         // initialize window
         InitializeComponent();
+        Title = App.AppName;
         Width = SystemParameters.PrimaryScreenWidth;
         ApplyTextStyle();
 
@@ -96,7 +97,14 @@ public partial class MainWindow
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
+        // set WS_EX_TRANSPARENT to implement mouse pass-through
         var hWnd = new WindowInteropHelper(this).Handle;
         WindowHelper.SetWindowExTransparent(hWnd);
+    }
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        base.OnClosing(e);
+        e.Cancel = true; // disable closing event
     }
 }

@@ -21,6 +21,7 @@ public partial class App
     private static NotifyIcon? _notifyIcon;
 
     internal const string AppName = "Time on the TOP";
+    internal const string AppId = "TimeOnTheTop";
 
     internal static string ExecutableFilePath = "";
 
@@ -59,7 +60,7 @@ public partial class App
         executableFile = Path.GetFullPath(executableFile!);
         ExecutableFilePath = executableFile;
         var configDir = Path.GetDirectoryName(executableFile)!;
-        var configFile = Path.Combine(configDir, "TimeOnTheTop.json");
+        var configFile = Path.Combine(configDir, $"{AppId}.json");
         _configFile = configFile;
 
         // load config
