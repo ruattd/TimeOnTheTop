@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.Win32;
+using Application = System.Windows.Application;
 using Brushes = System.Windows.Media.Brushes;
 using MessageBox = System.Windows.MessageBox;
 
@@ -90,8 +91,39 @@ public partial class App
         _notifyIcon = new NotifyIcon
         {
             Text = AppName,
+            ContextMenuStrip = new ContextMenuStrip(),
             Visible = true
         };
+        {
+            var items = _notifyIcon.ContextMenuStrip.Items;
+
+            // items.Add(new ToolStripLabel(AppName));
+
+            ToolStripMenuItem itemVisible = new("显示");
+            itemVisible.CheckOnClick = true;
+            itemVisible.Checked = true;
+            itemVisible.Click += (_, _) =>
+            {
+                Current.MainWindow!.Visibility = itemVisible.Checked ? Visibility.Visible : Visibility.Hidden;
+            };
+            items.Add(itemVisible);
+
+            items.Add(new ToolStripSeparator());
+
+            ToolStripMenuItem itemOpenConfig = new("设置");
+            itemOpenConfig.Click += (_, _) =>
+            {
+                ConfigWindow.ActiveOrCreate();
+            };
+            items.Add(itemOpenConfig);
+
+            ToolStripMenuItem itemExit = new("退出");
+            itemExit.Click += (_, _) =>
+            {
+                OnExit();
+            };
+            items.Add(itemExit);
+        }
         
         // detect system theme changes
         OnSystemThemeChanged();
