@@ -21,6 +21,12 @@ public partial class App
     private static string _configFile = "";
     private static NotifyIcon? _notifyIcon;
 
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        IncludeFields = true,
+        AllowTrailingCommas = true,
+    };
+
     internal const string AppName = "Time on the TOP";
     internal const string AppId = "TimeOnTheTop";
 
@@ -48,7 +54,7 @@ public partial class App
     {
         Task.Run(() =>
         {
-            var jsonText = JsonSerializer.Serialize(Config);
+            var jsonText = JsonSerializer.Serialize(Config, JsonOptions);
             File.WriteAllText(_configFile, jsonText);
         });
     }
@@ -67,20 +73,20 @@ public partial class App
         // load config
         try
         {
-            if (!File.Exists(configFile))
+            if (File.Exists(configFile))
+            {
+                var jsonText = File.ReadAllText(configFile);
+                var deserializedConfig = JsonSerializer.Deserialize<Config>(jsonText, JsonOptions);
+                if (deserializedConfig == null) OnInitError("Config", "Invalid config content");
+                Config = deserializedConfig!;
+            }
+            else
             {
                 FirstStart = true;
                 File.Create(configFile).Close();
                 SaveConfig();
             }
-            else
-            {
-                var jsonText = File.ReadAllText(configFile);
-                var deserializedConfig = JsonSerializer.Deserialize<Config>(jsonText);
-                if (deserializedConfig == null) OnInitError("Config", "Invalid config content");
-                Config = deserializedConfig!;
             }
-        }
         catch (Exception e)
         {
             OnInitError("Config", $"Error while reading/creating config file:\n{e}");
