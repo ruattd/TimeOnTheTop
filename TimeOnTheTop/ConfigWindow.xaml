@@ -5,8 +5,156 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeOnTheTop"
         mc:Ignorable="d"
+        KeyUp="Window_OnKey" KeyDown="Window_OnKey"
         Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+
+    <Window.Style>
+        <!-- use adonis theme -->
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+
+    <Window.Resources>
+
+        <!-- control styles -->
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Width" Value="80"/>
+        </Style>
+        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Height" Value="32"/>
+            <EventSetter Event="SelectionChanged" Handler="OnValueChanged"/>
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Height" Value="32"/>
+            <EventSetter Event="TextChanged" Handler="OnValueChanged"/>
+        </Style>
+        <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+            <Setter Property="Margin" Value="5"/>
+            <EventSetter Event="ValueChanged" Handler="OnValueChanged"/>
+        </Style>
+        <Style TargetType="Rectangle" x:Key="LocalRectangle">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Margin" Value="5"/>
+            <EventSetter Event="Click" Handler="OnValueChanged"/>
+        </Style>
+
+        <!-- resources -->
+        <Color x:Key="Color1"/>
+        <Color x:Key="Color2"/>
+        <SolidColorBrush x:Key="PreviewColor1" Color="{DynamicResource Color1}"/>
+        <SolidColorBrush x:Key="PreviewColor2" Color="{DynamicResource Color2}"/>
+        <LinearGradientBrush x:Key="PreviewGradient" StartPoint="0 0" EndPoint="1 0">
+            <LinearGradientBrush.GradientStops>
+                <GradientStop Offset="0" Color="{DynamicResource Color1}"/>
+                <GradientStop Offset="1" Color="{DynamicResource Color2}"/>
+            </LinearGradientBrush.GradientStops>
+        </LinearGradientBrush>
+
+    </Window.Resources>
+
+    <!-- main layout -->
+    <DockPanel>
+
+        <!-- settings -->
+        <StackPanel DockPanel.Dock="Top" Margin="5" Orientation="Vertical" CanVerticallyScroll="True">
+            <TextBlock Text="文本样式" FontWeight="Bold" FontSize="16"/>
+            <DockPanel>
+                <TextBlock Text="字体"/>
+                <ComboBox x:Name="ComboBoxFont"
+                          SelectionChanged="ComboBoxFont_OnSelectionChanged"
+                          ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}"
+                          HorizontalAlignment="Left" Width="200">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" FontFamily="{Binding}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Text="字重"/>
+                <ComboBox x:Name="ComboBoxFontWeight">
+                    <x:Static Member="FontWeights.Black"/>
+                    <x:Static Member="FontWeights.Bold"/>
+                    <!-- <x:Static Member="FontWeights.DemiBold"/> -->
+                    <!-- <x:Static Member="FontWeights.ExtraBlack"/> -->
+                    <!-- <x:Static Member="FontWeights.ExtraBold"/> -->
+                    <!-- <x:Static Member="FontWeights.ExtraLight"/> -->
+                    <!-- <x:Static Member="FontWeights.Heavy"/> -->
+                    <x:Static Member="FontWeights.Light"/>
+                    <x:Static Member="FontWeights.Medium"/>
+                    <!-- <x:Static Member="FontWeights.Normal"/> -->
+                    <x:Static Member="FontWeights.Regular"/>
+                    <!-- <x:Static Member="FontWeights.SemiBold"/> -->
+                    <x:Static Member="FontWeights.Thin"/>
+                    <!-- <x:Static Member="FontWeights.UltraBlack"/> -->
+                    <!-- <x:Static Member="FontWeights.UltraBold"/> -->
+                    <!-- <x:Static Member="FontWeights.UltraLight"/> -->
+                </ComboBox>
+                <TextBlock Text="对齐" HorizontalAlignment="Right"/>
+                <ComboBox x:Name="ComboBoxTextAlignment" HorizontalAlignment="Right">
+                    <x:Static Member="TextAlignment.Left"/>
+                    <x:Static Member="TextAlignment.Right"/>
+                    <x:Static Member="TextAlignment.Center"/>
+                </ComboBox>
+                <TextBlock Text="字号"/>
+                <TextBox x:Name="TextBoxFontSize" MaxLines="1" TextWrapping="NoWrap" Width="50"
+                         PreviewTextInput="TextBoxFontSize_OnPreviewTextInput"
+                         TextChanged="TextBoxFontSize_OnTextChanged"/>
+                <Slider x:Name="SliderFontSize" HorizontalAlignment="Stretch" Orientation="Horizontal"
+                        Minimum="9.9" Maximum="100.0" TickFrequency="1.0" IsSnapToTickEnabled="True"
+                        ValueChanged="SliderFontSize_OnValueChanged"/>
+            </DockPanel>
+            <TextBlock Text="颜色" FontWeight="Bold" FontSize="16"/>
+            <DockPanel Height="48" LastChildFill="True">
+                <Button Click="ButtonColor1_OnClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="12" Height="12" Fill="{DynamicResource PreviewColor1}"/>
+                        <TextBlock Text="颜色A"/>
+                    </StackPanel>
+                </Button>
+                <Button Click="ButtonColor2_OnClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="12" Height="12" Fill="{DynamicResource PreviewColor2}"/>
+                        <TextBlock Text="颜色B"/>
+                    </StackPanel>
+                </Button>
+                <TextBlock Text="使用渐变色"/>
+                <CheckBox x:Name="CheckBoxEnableGradient"/>
+                <Rectangle>
+                    <Rectangle.Style>
+                        <Style TargetType="Rectangle" BasedOn="{StaticResource LocalRectangle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=CheckBoxEnableGradient,Path=IsChecked}" Value="True">
+                                    <Setter Property="Fill" Value="{DynamicResource PreviewGradient}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Fill" Value="{DynamicResource PreviewColor1}"/>
+                        </Style>
+                    </Rectangle.Style>
+                </Rectangle>
+            </DockPanel>
+            <!-- TODO options -->
+        </StackPanel>
+
+        <!-- bottom bar -->
+        <StackPanel DockPanel.Dock="Bottom" Height="46" VerticalAlignment="Bottom" Background="#4888">
+            <DockPanel Margin="5" Height="36" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="AppNameLabel"/>
+                <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button Content="确定" Click="ButtonOK_OnClick"/>
+                    <Button Content="取消" Click="ButtonCancel_OnClick" x:Name="ButtonCancel"/>
+                    <Button Content="应用" Click="ButtonApply_OnClick" IsEnabled="False" x:Name="ButtonApply"/>
+                </StackPanel>
+            </DockPanel>
+        </StackPanel>
+
+    </DockPanel>
+
 </Window>

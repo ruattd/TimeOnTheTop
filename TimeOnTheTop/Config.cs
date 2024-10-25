@@ -20,13 +20,13 @@ internal class Config
 
     // color
     public bool EnableGradient = true;
-    public Color Color1 = Color.FromArgb(0x30, 0xFF, 0xFF, 0xFF);
-    public Color Color2 = Color.FromArgb(0x30, 0x20, 0xFF, 0xE4);
+    public uint Color1 = 0x30FFFFFF;
+    public uint Color2 = 0x3020FFE4;
 
     // shadow
     public bool EnableShadow = true;
     public double ShadowBlurRadius = 5;
-    public Color ShadowColor = Colors.Black;
+    public uint ShadowColor = 0xFF000000;
     public double ShadowOpacity = 0.9;
     public double ShadowDepth = 0;
 
@@ -37,4 +37,19 @@ internal class Config
     // time
     public int RefreshDelay = 1000;
     public string Expression = "HH:mm";
+
+    // value converters
+    public static Color HexToColor(uint argb)
+    {
+        var bytes = BitConverter.GetBytes(argb);
+        return Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
+    }
+    public static uint ColorToHex(Color color)
+    {
+        var a = color.A << 24;
+        var r = color.R << 16;
+        var g = color.G << 8;
+        var b = color.B << 0;
+        return (uint)(a | r | g | b);
+    }
 }

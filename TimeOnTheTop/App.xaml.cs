@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using Application = System.Windows.Application;
 using Brushes = System.Windows.Media.Brushes;
 using MessageBox = System.Windows.MessageBox;
 
@@ -29,17 +29,22 @@ public partial class App
 
     internal const string AppName = "Time on the TOP";
     internal const string AppId = "TimeOnTheTop";
+    internal const string AppVersion = "1.0.0";
 
-    internal static string ExecutableFilePath = "";
+    internal static string ExecutableFilePath { get; private set; } = "";
 
-    internal static Config Config = new();
-    internal static bool FirstStart = false;
-    internal static bool ConfigChanged = false;
+    // config
+    internal static Config Config { get; private set; } = new();
+    internal static bool FirstStart { get; set; } = false;
+    internal static bool ConfigChanged { get; set; } = false;
 
-    internal static RegistryKey StartupKey;
+    // registry
+    internal static RegistryKey StartupKey { get; private set; }
 
-    internal static bool AppLightTheme;
-    internal static bool SystemLightTheme;
+    // theme
+    internal static bool AppLightTheme { get; private set; }
+    internal static bool SystemLightTheme { get; private set; }
+    internal static BitmapImage AppIcon { get; private set; } = new();
 
     static App()
     {
@@ -58,7 +63,7 @@ public partial class App
             File.WriteAllText(_configFile, jsonText);
         });
     }
-
+    
     public App()
     {
         // get config file path
@@ -86,12 +91,14 @@ public partial class App
                 File.Create(configFile).Close();
                 SaveConfig();
             }
-            }
+        }
         catch (Exception e)
         {
             OnInitError("Config", $"Error while reading/creating config file:\n{e}");
             throw;
         }
+
+        InitializeComponent();
 
         // create notify icon
         _notifyIcon = new NotifyIcon
@@ -139,11 +146,24 @@ public partial class App
     private static void OnSystemThemeChanged()
     {
         // get system theme config
+
         var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
         if (key?.GetValue("AppsUseLightTheme") is int appLight) AppLightTheme = appLight != 0;
         if (key?.GetValue("SystemUsesLightTheme") is int sysLight) SystemLightTheme = sysLight != 0;
-        // update notify icon
-        if (_notifyIcon != null) _notifyIcon.Icon = Icon.ExtractAssociatedIcon(SystemLightTheme ? "assets/appicon.ico" : "assets/appicon_dark.ico");
+
+        // update icons
+
+        var iconName = SystemLightTheme ? "appicon.ico" : "appicon_dark.ico";
+        if (_notifyIcon != null) _notifyIcon.Icon = Icon.ExtractAssociatedIcon($"assets/{iconName}");
+        var iconImageName = SystemLightTheme ? "appicon.png" : "appicon_dark.png";
+        AppIcon = new BitmapImage(new Uri($"assets/{iconImageName}", UriKind.Relative));
+
+        // update window framework theme
+
+        WindowHelper.SetPreferredAppMode(AppLightTheme ? WindowHelper.APPMODE_LIGHT : WindowHelper.APPMODE_DARK);
+        WindowHelper.FlushMenuThemes();
+        var cfgWindow = ConfigWindow.Current;
+        if (cfgWindow?.IsInitialized == true) cfgWindow.UpdateWindowTheme();
     }
 
     internal static void OnInitError(string type, string message)

@@ -37,28 +37,9 @@ public partial class MainWindow
         Title = App.AppName;
         Width = SystemParameters.PrimaryScreenWidth;
         ApplyTextStyle();
-
-        // timer
-        var config = App.Config;
-        DispatcherTimer timer = new(
-            TimeSpan.FromMilliseconds(config.RefreshDelay),
-            DispatcherPriority.Render,
-            (_, _) =>
-            {
-                // update style
-                if (App.ConfigChanged)
-                {
-                    ApplyTextStyle();
-                    App.ConfigChanged = false;
-                }
-                // update time
-                var time = DateTime.Now;
-                var text = time.ToString(config.Expression);
-                if (TimeText.Text != text) TimeText.Text = text;
-            },
-            Dispatcher.CurrentDispatcher);
-        timer.Start();
     }
+
+    private DispatcherTimer? _timer;
 
     private void ApplyTextStyle()
     {
@@ -76,30 +57,50 @@ public partial class MainWindow
 
         // color
         if (config.EnableGradient)
-            TimeText.Foreground = new LinearGradientBrush(config.Color1, config.Color2, 0);
+            TimeText.Foreground = new LinearGradientBrush(Config.HexToColor(config.Color1), Config.HexToColor(config.Color2), 0);
         else
-            TimeText.Foreground = new SolidColorBrush(config.Color1);
+            TimeText.Foreground = new SolidColorBrush(Config.HexToColor(config.Color1));
 
         // shadow
         if (config.EnableShadow)
             TimeText.Effect = new DropShadowEffect()
             {
                 BlurRadius = config.ShadowBlurRadius,
-                Color = config.ShadowColor,
+                Color = Config.HexToColor(config.ShadowColor),
                 Opacity = config.ShadowOpacity,
                 Direction = 0,
                 ShadowDepth = config.ShadowDepth
             };
         else
             TimeText.Effect = null;
+
+        // timer
+        _timer?.Stop();
+        _timer = new DispatcherTimer(
+            TimeSpan.FromMilliseconds(config.RefreshDelay),
+            DispatcherPriority.Render,
+            (_, _) =>
+            {
+                // update style
+                if (App.ConfigChanged)
+                {
+                    ApplyTextStyle();
+                    App.ConfigChanged = false;
+                }
+                // update time
+                var time = DateTime.Now;
+                var text = time.ToString(config.Expression);
+                if (TimeText.Text != text) TimeText.Text = text;
+            },
+            Dispatcher.CurrentDispatcher);
+        _timer.Start();
     }
 
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-        // set WS_EX_TRANSPARENT to implement mouse pass-through
-        var hWnd = new WindowInteropHelper(this).Handle;
-        WindowHelper.SetWindowExTransparent(hWnd);
+        // set ExTransparent to implement mouse pass-through
+        WindowHelper.SetWindowExTransparent(WindowHelper.GetHandle(this));
     }
 
     protected override void OnClosing(CancelEventArgs e)
