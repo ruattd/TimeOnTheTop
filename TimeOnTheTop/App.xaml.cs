@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Brushes = System.Windows.Media.Brushes;
 using MessageBox = System.Windows.MessageBox;
+using FormsMessageBox = System.Windows.Forms.MessageBox;
 
 namespace TimeOnTheTop;
 
@@ -72,6 +73,19 @@ public partial class App
         executableFile = Path.GetFullPath(executableFile!);
         ExecutableFilePath = executableFile;
         var configDir = Path.GetDirectoryName(executableFile)!;
+        
+        // global exception handler
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var content = args.ExceptionObject.ToString();
+            File.WriteAllText(Path.Combine(configDir, $"{AppId}_Exception.txt"), content);
+            FormsMessageBox.Show(
+                text: content,
+                caption: $"Unhandled Exception - {AppName}",
+                buttons: MessageBoxButtons.OK,
+                icon: MessageBoxIcon.Error);
+        };
+        
         var configFile = Path.Combine(configDir, $"{AppId}.json");
         _configFile = configFile;
 
