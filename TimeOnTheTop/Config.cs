@@ -20,8 +20,8 @@ internal class Config
 
     // color
     public bool EnableGradient = true;
-    public uint Color1 = 0x30FFFFFF;
-    public uint Color2 = 0x3020FFE4;
+    public uint Color1 = 0xB6FFFFFF;
+    public uint Color2 = 0x8278FF20;
 
     // shadow
     public bool EnableShadow = true;
