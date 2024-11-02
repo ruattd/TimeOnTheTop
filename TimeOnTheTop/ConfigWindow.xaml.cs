@@ -95,6 +95,11 @@ public partial class ConfigWindow
         Resources["Color1"] = Config.HexToColor(config.Color1);
         Resources["Color2"] = Config.HexToColor(config.Color2);
         CheckBoxEnableGradient.IsChecked = config.EnableGradient;
+        CheckBoxEnableShadow.IsChecked = config.EnableShadow;
+        Resources["ColorShadow"] = Config.HexToColor(config.ShadowColor);
+        SliderShadowBlurRadius.Value = config.ShadowBlurRadius;
+        SliderShadowOpacity.Value = config.ShadowOpacity * 100;
+        SliderShadowDepth.Value = config.ShadowDepth;
         // disable apply button
         ButtonApply.IsEnabled = false;
     }
@@ -109,6 +114,11 @@ public partial class ConfigWindow
         config.Color1 = Config.ColorToHex((Color)Resources["Color1"]);
         config.Color2 = Config.ColorToHex((Color)Resources["Color2"]);
         config.EnableGradient = CheckBoxEnableGradient.IsChecked == true;
+        config.EnableShadow = CheckBoxEnableShadow.IsChecked == true;
+        config.ShadowColor = Config.ColorToHex((Color)Resources["ColorShadow"]);
+        config.ShadowBlurRadius = SliderShadowBlurRadius.Value;
+        config.ShadowOpacity = SliderShadowOpacity.Value / 100;
+        config.ShadowDepth = SliderShadowDepth.Value;
         // save & active config
         App.SaveConfig();
         App.ConfigChanged = true;
@@ -243,19 +253,26 @@ public partial class ConfigWindow
         }
     }
 
+    private void OnPickColor(object sender, RoutedEventArgs e, string colorName, string title)
+    {
+        var color = ColorDialog.PickColor((Color)Resources[colorName], $"选择 {title}", this);
+        if (color == null) return;
+        Resources[colorName] = color;
+        OnValueChanged(sender, e);
+    }
+
     private void ButtonColor1_OnClick(object sender, RoutedEventArgs e)
     {
-        var color = ColorDialog.PickColor((Color)Resources["Color1"], "选择 颜色A", this);
-        if (color == null) return;
-        Resources["Color1"] = color;
-        OnValueChanged(sender, e);
+        OnPickColor(sender, e, "Color1", "颜色A");
     }
 
     private void ButtonColor2_OnClick(object sender, RoutedEventArgs e)
     {
-        var color = ColorDialog.PickColor((Color)Resources["Color2"], "选择 颜色B", this);
-        if (color == null) return;
-        Resources["Color2"] = color;
-        OnValueChanged(sender, e);
+        OnPickColor(sender, e, "Color2", "颜色B");
+    }
+
+    private void ButtonColorShadow_OnClick(object sender, RoutedEventArgs e)
+    {
+        OnPickColor(sender, e, "ColorShadow", "阴影颜色");
     }
 }
