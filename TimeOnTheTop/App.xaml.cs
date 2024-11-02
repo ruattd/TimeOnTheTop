@@ -169,7 +169,7 @@ public partial class App
 
         var iconName = SystemLightTheme ? "appicon.ico" : "appicon_dark.ico";
         if (_notifyIcon != null) _notifyIcon.Icon = new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream);
-        var iconImageName = SystemLightTheme ? "appicon.png" : "appicon_dark.png";
+        var iconImageName = AppLightTheme ? "appicon.png" : "appicon_dark.png";
         AppIcon = new BitmapImage(new Uri($"pack://application:,,,/assets/{iconImageName}"));
 
         // update window framework theme
