@@ -20,9 +20,12 @@ using Application = System.Windows.Application;
 using ComboBox = System.Windows.Controls.ComboBox;
 using FontFamily = System.Windows.Media.FontFamily;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using MessageBox = System.Windows.MessageBox;
+using MessageBox = AdonisUI.Controls.MessageBox;
 using Color = System.Windows.Media.Color;
 using System.Drawing;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace TimeOnTheTop;
 
@@ -169,10 +172,10 @@ public partial class ConfigWindow
         if (isSet) return;
         // add startup registry
         var result = MessageBox.Show(this,
-            "是否向注册表添加启动项？",
-            App.AppName,
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
+            text: "是否向注册表添加启动项？",
+            caption: App.AppName,
+            buttons: MessageBoxButton.YesNo,
+            icon: MessageBoxImage.Question);
         if (result == MessageBoxResult.Yes)
         {
             App.StartupKey.SetValue($"TimeOnTheTop{order+1}", App.ExecutableFilePath, RegistryValueKind.String);

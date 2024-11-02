@@ -9,8 +9,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Brushes = System.Windows.Media.Brushes;
-using MessageBox = System.Windows.MessageBox;
-using FormsMessageBox = System.Windows.Forms.MessageBox;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace TimeOnTheTop;
 
@@ -79,11 +80,11 @@ public partial class App
         {
             var content = args.ExceptionObject.ToString();
             File.WriteAllText(Path.Combine(configDir, $"{AppId}_Exception.txt"), content);
-            FormsMessageBox.Show(
+            MessageBox.Show(
                 text: content,
                 caption: $"Unhandled Exception - {AppName}",
-                buttons: MessageBoxButtons.OK,
-                icon: MessageBoxIcon.Error);
+                buttons: MessageBoxButton.OK,
+                icon: MessageBoxImage.Error);
         };
         
         var configFile = Path.Combine(configDir, $"{AppId}.json");
@@ -182,19 +183,11 @@ public partial class App
 
     internal static void OnInitError(string type, string message)
     {
-        Window owner = new()
-        {
-            AllowsTransparency = true,
-            ShowInTaskbar = false,
-            WindowStyle = WindowStyle.None,
-            Background = Brushes.Transparent
-        };
-        owner.Show();
-        MessageBox.Show(owner,
-            $"[{type}] {message}",
-            $"初始化出错 - {AppName}",
-            MessageBoxButton.OK,
-            MessageBoxImage.Error);
+        MessageBox.Show(
+            text: $"[{type}] {message}",
+            caption: $"初始化出错 - {AppName}",
+            buttons: MessageBoxButton.OK,
+            icon: MessageBoxImage.Error);
         Current.Shutdown();
     }
 
