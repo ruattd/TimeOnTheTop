@@ -29,6 +29,7 @@ internal class Config
     public uint ShadowColor = 0xFF000000;
     public double ShadowOpacity = 0.9;
     public double ShadowDepth = 0;
+    public double ShadowDirection = 0;
 
     // positions
     public double Padding = 40;

@@ -37,7 +37,7 @@
         </Style>
         <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Width" Value="100"/>
+            <Setter Property="Width" Value="150"/>
             <Setter Property="AutoToolTipPlacement" Value="TopLeft"/>
             <Setter Property="AutoToolTipPrecision" Value="1"/>
             <Setter Property="IsMoveToPointEnabled" Value="True"/>
@@ -161,12 +161,16 @@
                         <TextBlock Text="阴影颜色"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Text="模糊半径(dp)"/>
-                <Slider x:Name="SliderShadowBlurRadius" Minimum="0.0" Maximum="50.0"/>
                 <TextBlock Text="不透明度(%)"/>
                 <Slider x:Name="SliderShadowOpacity" Minimum="0.0" Maximum="100.0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="模糊半径(dp)"/>
+                <Slider x:Name="SliderShadowBlurRadius" Minimum="0.0" Maximum="50.0"/>
                 <TextBlock Text="深度(dp)"/>
                 <Slider x:Name="SliderShadowDepth" Minimum="0.0" Maximum="20.0"/>
+                <TextBlock Text="方向(°)"/>
+                <Slider x:Name="SliderShadowDirection" Minimum="0.0" Maximum="360.0"/>
             </StackPanel>
 
             <!-- TODO options -->

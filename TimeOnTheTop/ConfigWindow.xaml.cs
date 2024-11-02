@@ -100,6 +100,7 @@ public partial class ConfigWindow
         SliderShadowBlurRadius.Value = config.ShadowBlurRadius;
         SliderShadowOpacity.Value = config.ShadowOpacity * 100;
         SliderShadowDepth.Value = config.ShadowDepth;
+        SliderShadowDirection.Value = config.ShadowDirection;
         // disable apply button
         ButtonApply.IsEnabled = false;
     }
@@ -119,6 +120,7 @@ public partial class ConfigWindow
         config.ShadowBlurRadius = SliderShadowBlurRadius.Value;
         config.ShadowOpacity = SliderShadowOpacity.Value / 100;
         config.ShadowDepth = SliderShadowDepth.Value;
+        config.ShadowDirection = SliderShadowDirection.Value;
         // save & active config
         App.SaveConfig();
         App.ConfigChanged = true;

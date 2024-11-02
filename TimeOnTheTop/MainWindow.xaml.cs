@@ -68,7 +68,7 @@ public partial class MainWindow
                 BlurRadius = config.ShadowBlurRadius,
                 Color = Config.HexToColor(config.ShadowColor),
                 Opacity = config.ShadowOpacity,
-                Direction = 0,
+                Direction = config.ShadowDirection,
                 ShadowDepth = config.ShadowDepth
             };
         else
