@@ -104,6 +104,11 @@ public partial class ConfigWindow
         SliderShadowOpacity.Value = config.ShadowOpacity * 100;
         SliderShadowDepth.Value = config.ShadowDepth;
         SliderShadowDirection.Value = config.ShadowDirection;
+        const string doubleFormat = "F2";
+        TextBoxPadding.Text = config.Padding.ToString(doubleFormat);
+        TextBoxMaxHeight.Text = config.MaxHeight.ToString(doubleFormat);
+        TextBoxRefreshDelay.Text = config.RefreshDelay.ToString("D");
+        TextBoxExpression.Text = config.Expression;
         // disable apply button
         ButtonApply.IsEnabled = false;
     }
@@ -124,6 +129,10 @@ public partial class ConfigWindow
         config.ShadowOpacity = SliderShadowOpacity.Value / 100;
         config.ShadowDepth = SliderShadowDepth.Value;
         config.ShadowDirection = SliderShadowDirection.Value;
+        config.Padding = double.Parse(TextBoxPadding.Text);
+        config.MaxHeight = double.Parse(TextBoxMaxHeight.Text);
+        config.RefreshDelay = int.Parse(TextBoxRefreshDelay.Text);
+        config.Expression = TextBoxExpression.Text;
         // save & active config
         App.SaveConfig();
         App.ConfigChanged = true;
@@ -243,12 +252,6 @@ public partial class ConfigWindow
         TextBoxFontSize.Text = value.ToString("F1");
     }
 
-    private void TextBoxFontSize_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
-    {
-        var result = double.TryParse(e.Text, out _);
-        e.Handled = !result;
-    }
-
     private void TextBoxFontSize_OnTextChanged(object sender, TextChangedEventArgs e)
     {
         if (double.TryParse(TextBoxFontSize.Text, out var n))
@@ -279,5 +282,15 @@ public partial class ConfigWindow
     private void ButtonColorShadow_OnClick(object sender, RoutedEventArgs e)
     {
         OnPickColor(sender, e, "ColorShadow", "阴影颜色");
+    }
+
+    private void TextBox_OnPreviewTextInput_Double(object sender, TextCompositionEventArgs e)
+    {
+        e.Handled = !double.TryParse(e.Text, out _);
+    }
+
+    private void TextBox_OnPreviewTextInput_Integer(object sender, TextCompositionEventArgs e)
+    {
+        e.Handled = !int.TryParse(e.Text, out _);
     }
 }

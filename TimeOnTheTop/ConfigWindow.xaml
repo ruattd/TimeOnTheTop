@@ -17,6 +17,7 @@
     <Window.Resources>
 
         <!-- control styles -->
+        <Style TargetType="StackPanel">
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Width" Value="80"/>
@@ -33,6 +34,10 @@
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Height" Value="32"/>
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="AcceptsTab" Value="False"/>
+            <Setter Property="AcceptsReturn" Value="False"/>
+            <Setter Property="MaxLines" Value="1"/>
             <EventSetter Event="TextChanged" Handler="OnValueChanged"/>
         </Style>
         <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
@@ -77,10 +82,8 @@
             <TextBlock Text="文本样式" FontWeight="Bold" FontSize="16"/>
             <DockPanel>
                 <TextBlock Text="字体"/>
-                <ComboBox x:Name="ComboBoxFont"
-                          SelectionChanged="ComboBoxFont_OnSelectionChanged"
-                          ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}"
-                          HorizontalAlignment="Left" Width="200">
+                    <ComboBox x:Name="ComboBoxFont" Width="180" SelectionChanged="ComboBoxFont_OnSelectionChanged"
+                              ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" FontFamily="{Binding}"/>
@@ -88,7 +91,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <TextBlock Text="字重"/>
-                <ComboBox x:Name="ComboBoxFontWeight">
+                    <ComboBox x:Name="ComboBoxFontWeight" Width="100">
                     <x:Static Member="FontWeights.Black"/>
                     <x:Static Member="FontWeights.Bold"/>
                     <!-- <x:Static Member="FontWeights.DemiBold"/> -->
@@ -106,15 +109,15 @@
                     <!-- <x:Static Member="FontWeights.UltraBold"/> -->
                     <!-- <x:Static Member="FontWeights.UltraLight"/> -->
                 </ComboBox>
-                <TextBlock Text="对齐" HorizontalAlignment="Right"/>
-                <ComboBox x:Name="ComboBoxTextAlignment" HorizontalAlignment="Right">
+                    <TextBlock Text="对齐"/>
+                    <ComboBox x:Name="ComboBoxTextAlignment" Width="80">
                     <x:Static Member="TextAlignment.Left"/>
                     <x:Static Member="TextAlignment.Right"/>
                     <x:Static Member="TextAlignment.Center"/>
                 </ComboBox>
                 <TextBlock Text="字号"/>
                 <TextBox x:Name="TextBoxFontSize" MaxLines="1" TextWrapping="NoWrap" Width="50"
-                         PreviewTextInput="TextBoxFontSize_OnPreviewTextInput"
+                             PreviewTextInput="TextBox_OnPreviewTextInput_Double"
                          TextChanged="TextBoxFontSize_OnTextChanged"/>
                 <Slider x:Name="SliderFontSize" Width="Auto" AutoToolTipPlacement="None"
                         Minimum="9.9" Maximum="100.0" TickFrequency="1.0" IsSnapToTickEnabled="True"
@@ -152,7 +155,7 @@
             </DockPanel>
 
             <TextBlock Text="阴影样式" FontWeight="Bold" FontSize="16"/>
-            <StackPanel Orientation="Horizontal">
+                <StackPanel>
                 <TextBlock Text="启用阴影"/>
                 <CheckBox x:Name="CheckBoxEnableShadow"/>
                 <Button Click="ButtonColorShadow_OnClick" Width="96">
@@ -164,7 +167,7 @@
                 <TextBlock Text="不透明度(%)"/>
                 <Slider x:Name="SliderShadowOpacity" Minimum="0.0" Maximum="100.0"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+                <StackPanel Height="32">
                 <TextBlock Text="模糊半径(dp)"/>
                 <Slider x:Name="SliderShadowBlurRadius" Minimum="0.0" Maximum="50.0"/>
                 <TextBlock Text="深度(dp)"/>
@@ -172,6 +175,21 @@
                 <TextBlock Text="方向(°)"/>
                 <Slider x:Name="SliderShadowDirection" Minimum="0.0" Maximum="360.0"/>
             </StackPanel>
+
+                <StackPanel Margin="0,5,0,0">
+                    <TextBlock Text="高级显示选项" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="请勿随意更改" Foreground="Gray" VerticalAlignment="Bottom"/>
+                </StackPanel>
+                <DockPanel>
+                    <TextBlock Text="边距(dp)"/>
+                    <TextBox x:Name="TextBoxPadding" PreviewTextInput="TextBox_OnPreviewTextInput_Double"/>
+                    <TextBlock Text="窗口高度(dp)"/>
+                    <TextBox x:Name="TextBoxMaxHeight" PreviewTextInput="TextBox_OnPreviewTextInput_Double"/>
+                    <TextBlock Text="时钟同步延迟(ms)"/>
+                    <TextBox x:Name="TextBoxRefreshDelay" PreviewTextInput="TextBox_OnPreviewTextInput_Integer"/>
+                    <TextBlock Text="格式表达式"/>
+                    <TextBox x:Name="TextBoxExpression" Width="Auto"/>
+                </DockPanel>
 
             <!-- TODO options -->
         </StackPanel>
