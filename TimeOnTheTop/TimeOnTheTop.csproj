@@ -10,6 +10,7 @@
 	<UseWindowsForms>true</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationIcon>assets\appicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
