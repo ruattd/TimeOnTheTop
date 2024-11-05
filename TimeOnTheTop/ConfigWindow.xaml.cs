@@ -15,14 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using AdonisUI;
 using Microsoft.Win32;
-using Forms = System.Windows.Forms;
-using Application = System.Windows.Application;
-using ComboBox = System.Windows.Controls.ComboBox;
-using FontFamily = System.Windows.Media.FontFamily;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using H.NotifyIcon.EfficiencyMode;
 using MessageBox = AdonisUI.Controls.MessageBox;
-using Color = System.Windows.Media.Color;
-using System.Drawing;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
@@ -54,6 +48,7 @@ public partial class ConfigWindow
         {
             Current = new ConfigWindow();
             Current.Show();
+            EfficiencyModeUtilities.SetEfficiencyMode(false);
         }
         else Current.Activate();
     }
@@ -71,10 +66,6 @@ public partial class ConfigWindow
 
         // icon
         Icon = icon;
-
-        // theme
-        ResourceLocator.SetColorScheme(Application.Current.Resources,
-            light ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
 
         // children
         foreach (Window child in OwnedWindows)
@@ -144,6 +135,7 @@ public partial class ConfigWindow
     {
         base.OnClosed(e);
         Current = null;
+        EfficiencyModeUtilities.SetEfficiencyMode(true);
     }
 
     protected override void OnSourceInitialized(EventArgs e)

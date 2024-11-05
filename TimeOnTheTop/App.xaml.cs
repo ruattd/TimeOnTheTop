@@ -1,14 +1,18 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using AdonisUI;
+using System.Windows.Media.Media3D;
+using H.NotifyIcon;
+using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Win32;
-using Brushes = System.Windows.Media.Brushes;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -21,7 +25,7 @@ namespace TimeOnTheTop;
 public partial class App
 {
     private static string _configFile = "";
-    private static NotifyIcon? _notifyIcon;
+    private static TaskbarIcon? _taskbarIcon;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -87,10 +91,9 @@ public partial class App
                 icon: MessageBoxImage.Error);
         };
         
+        // load config
         var configFile = Path.Combine(configDir, $"{AppId}.json");
         _configFile = configFile;
-
-        // load config
         try
         {
             if (File.Exists(configFile))
@@ -115,50 +118,19 @@ public partial class App
 
         InitializeComponent();
 
-        // create notify icon
-        _notifyIcon = new NotifyIcon
-        {
-            Text = AppName,
-            ContextMenuStrip = new ContextMenuStrip(),
-            Visible = true
-        };
-        {
-            var items = _notifyIcon.ContextMenuStrip.Items;
-
-            // items.Add(new ToolStripLabel(AppName));
-
-            ToolStripMenuItem itemVisible = new("显示");
-            itemVisible.CheckOnClick = true;
-            itemVisible.Checked = true;
-            itemVisible.Click += (_, _) =>
-            {
-                Current.MainWindow!.Visibility = itemVisible.Checked ? Visibility.Visible : Visibility.Hidden;
-            };
-            items.Add(itemVisible);
-
-            items.Add(new ToolStripSeparator());
-
-            ToolStripMenuItem itemOpenConfig = new("设置");
-            itemOpenConfig.Click += (_, _) =>
-            {
-                ConfigWindow.ActiveOrCreate();
-            };
-            items.Add(itemOpenConfig);
-
-            ToolStripMenuItem itemExit = new("退出");
-            itemExit.Click += (_, _) =>
-            {
-                OnExit();
-            };
-            items.Add(itemExit);
-        }
+        // setup resources
+        _taskbarIcon = (Resources["TaskbarIcon"] as TaskbarIcon)!;
         
         // detect system theme changes
         OnSystemThemeChanged();
         SystemEvents.UserPreferenceChanged += (_, _) => OnSystemThemeChanged();
+
+        // configure taskbar icon
+        _taskbarIcon.ToolTipText = AppName;
+        _taskbarIcon.ForceCreate();
     }
 
-    private static void OnSystemThemeChanged()
+    private void OnSystemThemeChanged()
     {
         // get system theme config
 
@@ -169,14 +141,16 @@ public partial class App
         // update icons
 
         var iconName = SystemLightTheme ? "appicon.ico" : "appicon_dark.ico";
-        if (_notifyIcon != null) _notifyIcon.Icon = new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream);
+        _taskbarIcon!.Icon = new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream);
         var iconImageName = AppLightTheme ? "appicon.png" : "appicon_dark.png";
         AppIcon = new BitmapImage(new Uri($"pack://application:,,,/assets/{iconImageName}"));
 
-        // update window framework theme
+        // update theme & color scheme
 
         WindowHelper.SetPreferredAppMode(AppLightTheme ? WindowHelper.APPMODE_LIGHT : WindowHelper.APPMODE_DARK);
         WindowHelper.FlushMenuThemes();
+        ResourceLocator.SetColorScheme(Application.Current.Resources,
+            AppLightTheme ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
         var cfgWindow = ConfigWindow.Current;
         if (cfgWindow?.IsInitialized == true) cfgWindow.UpdateWindowTheme();
     }
@@ -193,7 +167,7 @@ public partial class App
 
     internal static void OnExit()
     {
-        if (_notifyIcon != null) _notifyIcon.Visible = false;
+        _taskbarIcon?.Dispose();
         Current.Shutdown();
     }
 
