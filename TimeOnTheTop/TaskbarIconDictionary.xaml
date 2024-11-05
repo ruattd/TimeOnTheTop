@@ -5,16 +5,23 @@
                     xmlns:local="clr-namespace:TimeOnTheTop">
 
     <tb:TaskbarIcon x:Key="TaskbarIcon" MenuActivation="RightClick">
-        <tb:TaskbarIcon.Resources>
-            <Style TargetType="ContextMenu" BasedOn="{StaticResource {x:Type ContextMenu}}"/>
-            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}"/>
-        </tb:TaskbarIcon.Resources>
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>
+
                 <MenuItem Header="显示" IsCheckable="True" IsChecked="True" Click="MenuItemShow_OnClick"/>
                 <MenuItem Header="设置" Click="MenuItemSettings_OnClick"/>
+
                 <Separator/>
+
+                <MenuItem Header="预设时钟格式" Click="MenuItemFormats_OnClick"
+                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.Formats}}"/>
+                <MenuItem Header="预设样式" Click="MenuItemStyles_OnClick"
+                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.StyleNames}}"/>
+
+                <Separator/>
+
                 <MenuItem Header="退出" Click="MenuItemExit_OnClick"/>
+
             </ContextMenu>
         </tb:TaskbarIcon.ContextMenu>
     </tb:TaskbarIcon>

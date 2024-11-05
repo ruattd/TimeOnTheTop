@@ -69,6 +69,12 @@ public partial class App
             File.WriteAllText(_configFile, jsonText);
         });
     }
+
+    internal static void SaveChangedConfig()
+    {
+        ConfigChanged = true;
+        SaveConfig();
+    }
     
     public App()
     {
