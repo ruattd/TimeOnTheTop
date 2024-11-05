@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using H.NotifyIcon.EfficiencyMode;
 using FontFamily = System.Windows.Media.FontFamily;
 
 namespace TimeOnTheTop;
@@ -37,6 +38,9 @@ public partial class MainWindow
         Title = App.AppName;
         Width = SystemParameters.PrimaryScreenWidth;
         ApplyTextStyle();
+
+        // enable efficiency mode
+        EfficiencyModeUtilities.SetEfficiencyMode(true);
     }
 
     private DispatcherTimer? _timer;

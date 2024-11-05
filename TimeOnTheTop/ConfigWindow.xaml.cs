@@ -13,9 +13,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using AdonisUI;
-using Microsoft.Win32;
+using H.NotifyIcon;
 using H.NotifyIcon.EfficiencyMode;
+using Microsoft.Win32;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -47,8 +47,7 @@ public partial class ConfigWindow
         if (Current == null)
         {
             Current = new ConfigWindow();
-            Current.Show();
-            EfficiencyModeUtilities.SetEfficiencyMode(false);
+            WindowExtensions.Show(Current);
         }
         else Current.Activate();
     }
