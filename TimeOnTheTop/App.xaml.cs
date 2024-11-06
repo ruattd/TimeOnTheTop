@@ -35,7 +35,7 @@ public partial class App
 
     internal const string AppName = "Time on the TOP";
     internal const string AppId = "TimeOnTheTop";
-    internal const string AppVersion = "1.1.0";
+    internal const string AppVersion = "1.1.1";
 
     internal static string ExecutableFilePath { get; private set; } = "";
 
