@@ -146,9 +146,9 @@ public partial class App
 
         // update icons
 
-        var iconName = SystemLightTheme ? "appicon.ico" : "appicon_dark.ico";
-        _taskbarIcon!.Icon = new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream);
-        var iconImageName = AppLightTheme ? "appicon.png" : "appicon_dark.png";
+        var iconName = SystemLightTheme ? "appicon_light.ico" : "appicon_dark.ico";
+        _taskbarIcon!.UpdateIcon(new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream));
+        var iconImageName = AppLightTheme ? "appicon_light.png" : "appicon_dark.png";
         AppIcon = new BitmapImage(new Uri($"pack://application:,,,/assets/{iconImageName}"));
 
         // update theme & color scheme
