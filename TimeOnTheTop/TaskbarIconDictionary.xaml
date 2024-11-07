@@ -14,9 +14,11 @@
                 <Separator/>
 
                 <MenuItem Header="预设时钟格式" Click="MenuItemFormats_OnClick"
-                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.Formats}}"/>
-                <MenuItem Header="预设样式" Click="MenuItemStyles_OnClick"
-                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.StyleNames}}"/>
+                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.Formats}, Path=Keys}"/>
+                <MenuItem Header="预设颜色" Click="MenuItemColorStyles_OnClick"
+                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.ColorStyles}, Path=Keys}"/>
+                <MenuItem Header="预设阴影样式" Click="MenuItemShadowStyles_OnClick"
+                          ItemsSource="{Binding Source={x:Static local:TaskbarIconDictionary.ShadowStyles}, Path=Keys}"/>
 
                 <Separator/>
 
