@@ -22,11 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="assets\appicon.ico"/>
-    <Resource Include="assets\appicon_light.ico"/>
-    <Resource Include="assets\appicon_light.png"/>
-    <Resource Include="assets\appicon_dark.ico"/>
-    <Resource Include="assets\appicon_dark.png"/>
+    <Resource Include="assets\appicon.ico" />
+    <Resource Include="assets\appicon_light.ico" />
+    <Resource Include="assets\appicon_light.png" />
+    <Resource Include="assets\appicon_dark.ico" />
+    <Resource Include="assets\appicon_dark.png" />
   </ItemGroup>
 
 </Project>

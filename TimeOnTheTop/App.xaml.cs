@@ -50,7 +50,6 @@ public partial class App
     // theme
     internal static bool AppLightTheme { get; private set; }
     internal static bool SystemLightTheme { get; private set; }
-    internal static BitmapImage AppIcon { get; private set; } = new();
 
     static App()
     {
@@ -74,6 +73,17 @@ public partial class App
     {
         ConfigChanged = true;
         SaveConfig();
+    }
+
+    private static readonly bool Is16299OrHigher = Environment.OSVersion.Version >= new Version(10, 0, 16299);
+    internal static void SetEfficiencyMode(bool value)
+    {
+        if (Is16299OrHigher)
+        {
+#pragma warning disable CA1416
+            EfficiencyModeUtilities.SetEfficiencyMode(value);
+#pragma warning restore CA1416 
+        }
     }
     
     public App()
@@ -148,8 +158,6 @@ public partial class App
 
         var iconName = SystemLightTheme ? "appicon_light.ico" : "appicon_dark.ico";
         _taskbarIcon!.UpdateIcon(new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream));
-        var iconImageName = AppLightTheme ? "appicon_light.png" : "appicon_dark.png";
-        AppIcon = new BitmapImage(new Uri($"pack://application:,,,/assets/{iconImageName}"));
 
         // update theme & color scheme
 
@@ -157,6 +165,7 @@ public partial class App
         WindowHelper.FlushMenuThemes();
         ResourceLocator.SetColorScheme(Application.Current.Resources,
             AppLightTheme ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
+
         var cfgWindow = ConfigWindow.Current;
         if (cfgWindow?.IsInitialized == true) cfgWindow.UpdateWindowTheme();
     }

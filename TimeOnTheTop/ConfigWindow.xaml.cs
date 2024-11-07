@@ -13,8 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using H.NotifyIcon;
-using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Win32;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -46,8 +44,11 @@ public partial class ConfigWindow
     {
         if (Current == null)
         {
-            Current = new ConfigWindow();
-            WindowExtensions.Show(Current);
+            var window = new ConfigWindow();
+            window.Show();
+            window.UpdateWindowTheme(); // update theme
+            App.SetEfficiencyMode(false);
+            Current = window;
         }
         else Current.Activate();
     }
@@ -57,24 +58,21 @@ public partial class ConfigWindow
     internal void UpdateWindowTheme()
     {
         var light = App.AppLightTheme;
-        var icon = App.AppIcon;
 
-        // window framework
-        var hWnd = WindowHelper.GetHandle(this);
-        WindowHelper.SetWindowFrameworkDarkMode(hWnd, !light);
-
-        // icon
-        Icon = icon;
-
-        // children
-        foreach (Window child in OwnedWindows)
+        Dispatcher.BeginInvoke(() =>
         {
-            if (child is ColorDialog dialog)
+            // window framework
+            WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(this), !light);
+
+            // children
+            foreach (Window child in OwnedWindows)
             {
-                WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(dialog), !light);
-                dialog.Icon = icon;
+                if (child is ColorDialog dialog)
+                {
+                    WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(dialog), !light);
+                }
             }
-        }
+        });
     }
 
     private void UpdateContents()
@@ -134,14 +132,7 @@ public partial class ConfigWindow
     {
         base.OnClosed(e);
         Current = null;
-        EfficiencyModeUtilities.SetEfficiencyMode(true);
-    }
-
-    protected override void OnSourceInitialized(EventArgs e)
-    {
-        base.OnSourceInitialized(e);
-        // update theme
-        UpdateWindowTheme();
+        App.SetEfficiencyMode(true);
     }
 
     // UTILITIES

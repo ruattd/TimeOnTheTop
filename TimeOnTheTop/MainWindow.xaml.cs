@@ -40,7 +40,7 @@ public partial class MainWindow
         ApplyTextStyle();
 
         // enable efficiency mode
-        EfficiencyModeUtilities.SetEfficiencyMode(true);
+        App.SetEfficiencyMode(true);
     }
 
     private DispatcherTimer? _timer;
