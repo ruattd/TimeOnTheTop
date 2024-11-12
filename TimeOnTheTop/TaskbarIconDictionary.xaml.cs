@@ -37,6 +37,7 @@ public partial class TaskbarIconDictionary
     {
         ["24 小时制 (默认)"] = new(),
         ["24 小时制, 精确到秒"] = new() { Expression = "HH:mm:ss", RefreshDelay = 100 },
+        ["24 小时制, 精确到 1/10 秒"] = new() { Expression = "HH:mm:ss.f", RefreshDelay = 50 },
         ["24 小时制, 精确到毫秒 (性能警告)"] = new() { Expression = "HH:mm:ss.fff", RefreshDelay = 1 },
         ["12 小时制"] = new() { Expression = "h:mm tt" },
         ["12 小时制, 精确到秒"] = new() { Expression = "h:mm:ss tt", RefreshDelay = 100 },
@@ -49,14 +50,17 @@ public partial class TaskbarIconDictionary
     public static readonly ReadOnlyDictionary<string, ColorStyle> ColorStyles = new(new Dictionary<string, ColorStyle>
     {
         ["默认"] = new(),
+        ["白"] = new() { EnableGradient = false, Color1 = 0xB6FFFFFF },
+        ["黑"] = new() { EnableGradient = false, Color1 = 0xB6000000 },
         ["辉光"] = new() { Color1 = 0xFF00FFD4, Color2 = 0xFFFFE500 },
         ["辉光, 50%"] = new() { Color1 = 0x7F00FFD4, Color2 = 0x7FFFE500 },
         ["极夜"] = new() { Color1 = 0xFF7000FF, Color2 = 0xFFFF009B },
         ["极夜, 50%"] = new() { Color1 = 0x7F7000FF, Color2 = 0x7FFF009B },
         ["黄昏"] = new() { Color1 = 0xBFF6EA41, Color2 = 0x9BF048C6 },
         ["薄荷"] = new() { Color1 = 0x960DE2B4, Color2 = 0xA9C1FCD3 },
-        ["魔法少女！"] = new() { Color1 = 0xC5FF8FC9, Color2 = 0x9FFFE8E8 },
+        ["文艺少女"] = new() { Color1 = 0xC5FF8FC9, Color2 = 0x9FFFE8E8 },
         ["初音未来"] = new() { Color1 = 0xE335EFE1, Color2 = 0xD81C9199 },
+        ["金榜题名"] = new() { Color1 = 0xFFFF8B00, Color2 = 0xFFFF0033 },
     });
     
     public static readonly ReadOnlyDictionary<string, ShadowStyle> ShadowStyles = new(new Dictionary<string, ShadowStyle>
