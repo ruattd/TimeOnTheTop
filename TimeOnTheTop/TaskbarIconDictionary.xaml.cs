@@ -69,6 +69,8 @@ public partial class TaskbarIconDictionary
         ["无阴影"] = new() { EnableShadow = false },
         ["Material"] = new() { ShadowBlurRadius = 4.2, ShadowDepth = 2.5, ShadowDirection = 315 },
         ["硬边缘"] = new() { ShadowBlurRadius = 0, ShadowDepth = 3.0, ShadowDirection = 315 },
+        ["外发光, 白"] = new() { ShadowColor = 0xFFFFFFFF, ShadowBlurRadius = 10.0 },
+        ["外发光, 辉光"] = new() { ShadowColor = 0xFF00FF25, ShadowBlurRadius = 10.0 },
     });
 
     private void MenuItemShow_OnClick(object sender, RoutedEventArgs e)
