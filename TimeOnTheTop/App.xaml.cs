@@ -31,6 +31,7 @@ public partial class App
 
     // config
     internal static Config Config { get; private set; } = new();
+    internal static string ConfigDirectory = "";
     internal static bool FirstStart { get; set; } = false;
     internal static bool ConfigChanged { get; set; } = false;
 
@@ -83,22 +84,14 @@ public partial class App
         if (executableFile == null) OnInitError("Config", "Executable path not available");
         executableFile = Path.GetFullPath(executableFile!);
         ExecutableFilePath = executableFile;
-        var configDir = Path.GetDirectoryName(executableFile)!;
+        ConfigDirectory = Path.GetDirectoryName(executableFile)!;
         
-        // global exception handler
-        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-        {
-            var content = args.ExceptionObject.ToString();
-            File.WriteAllText(Path.Combine(configDir, $"{AppId}_Exception.txt"), content);
-            MessageBox.Show(
-                text: content,
-                caption: $"Unhandled Exception - {AppName}",
-                buttons: MessageBoxButton.OK,
-                icon: MessageBoxImage.Error);
-        };
+        // catch unhandled exceptions
+        AppDomain.CurrentDomain.UnhandledException += (_, args) => OnCatchUnhandledException(args.ExceptionObject);
+        Current.DispatcherUnhandledException += (_, args) => OnCatchUnhandledException(args.Exception);
         
         // load config
-        var configFile = Path.Combine(configDir, $"{AppId}.json");
+        var configFile = Path.Combine(ConfigDirectory, $"{AppId}.json");
         _configFile = configFile;
         try
         {
@@ -153,11 +146,23 @@ public partial class App
 
         WindowHelper.SetPreferredAppMode(AppLightTheme ? WindowHelper.APPMODE_LIGHT : WindowHelper.APPMODE_DARK);
         WindowHelper.FlushMenuThemes();
-        ResourceLocator.SetColorScheme(Application.Current.Resources,
+        ResourceLocator.SetColorScheme(Current.Resources,
             AppLightTheme ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
 
         var cfgWindow = ConfigWindow.Current;
         if (cfgWindow?.IsInitialized == true) cfgWindow.UpdateWindowTheme();
+    }
+
+    internal static void OnCatchUnhandledException(object e)
+    {
+        var content = e.ToString();
+        File.WriteAllText(Path.Combine(ConfigDirectory, $"{AppId}_Exception.txt"), content);
+        MessageBox.Show(
+            text: content,
+            caption: $"Unhandled Exception - {AppName}",
+            buttons: MessageBoxButton.OK,
+            icon: MessageBoxImage.Error);
+        OnExit();
     }
 
     internal static void OnInitError(string type, string message)
@@ -167,7 +172,7 @@ public partial class App
             caption: $"初始化出错 - {AppName}",
             buttons: MessageBoxButton.OK,
             icon: MessageBoxImage.Error);
-        Current.Shutdown();
+        OnExit();
     }
 
     internal static void OnExit()
