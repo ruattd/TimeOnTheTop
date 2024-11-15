@@ -1,15 +1,8 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using AdonisUI;
-using System.Windows.Media.Media3D;
 using H.NotifyIcon;
 using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Win32;
@@ -19,9 +12,6 @@ using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace TimeOnTheTop;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App
 {
     private static string _configFile = "";

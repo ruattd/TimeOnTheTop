@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -21,9 +10,6 @@ using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace TimeOnTheTop;
 
-/// <summary>
-/// Interaction logic for ConfigWindow.xaml
-/// </summary>
 public partial class ConfigWindow
 {
     public ConfigWindow()
@@ -67,10 +53,7 @@ public partial class ConfigWindow
             // children
             foreach (Window child in OwnedWindows)
             {
-                if (child is ColorDialog dialog)
-                {
-                    WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(dialog), !light);
-                }
+                WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(child), !light);
             }
         });
     }
