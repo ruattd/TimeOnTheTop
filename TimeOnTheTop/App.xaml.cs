@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.IO;
 using System.Text.Json;
-using System.Windows;
 using AdonisUI;
 using H.NotifyIcon;
 using H.NotifyIcon.EfficiencyMode;
