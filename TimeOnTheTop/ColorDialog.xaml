@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeOnTheTop"
         xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
-        mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Title="ColorDialog" Height="450" Width="300">
 
     <Window.Resources>
