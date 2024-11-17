@@ -1,13 +1,11 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using System.Windows;
 using AdonisUI;
 using H.NotifyIcon;
 using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Win32;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace TimeOnTheTop;
 
@@ -38,15 +36,21 @@ public partial class App
     internal static RegistryKey StartupKey { get; private set; }
 
     // theme
-    internal static bool AppLightTheme { get; private set; }
-    internal static bool SystemLightTheme { get; private set; }
+    internal static bool AppLightTheme { get; private set; } = true;
+    internal static bool SystemLightTheme { get; private set; } = true;
 
     static App()
     {
+        // catch unhandled exceptions
+        System.Windows.Forms.Application.SetUnhandledExceptionMode(System.Windows.Forms.UnhandledExceptionMode.CatchException);
+        System.Windows.Forms.Application.ThreadException += (_, args) => OnCatchUnhandledException(args.Exception);
+        AppDomain.CurrentDomain.UnhandledException += (_, args) => OnCatchUnhandledException(args.ExceptionObject);
+        TaskScheduler.UnobservedTaskException += (_, args) => OnCatchUnhandledException(args.Exception);
+
         // get startup registry key
         var key = Registry.CurrentUser
             .OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-        if (key == null) OnInitError("Registry", "Failed to get startup registry key");
+        if (key == null) OnInitError("注册", "无法获取启动项的注册表键");
         StartupKey = key!;
     }
 
@@ -78,42 +82,59 @@ public partial class App
     
     public App()
     {
-        // get config file path
-        var executableFile = Environment.ProcessPath;
-        if (executableFile == null) OnInitError("Config", "Executable path not available");
-        executableFile = Path.GetFullPath(executableFile!);
-        ExecutableFilePath = executableFile;
-        ConfigDirectory = Path.GetDirectoryName(executableFile)!;
-        
-        // catch unhandled exceptions
-        AppDomain.CurrentDomain.UnhandledException += (_, args) => OnCatchUnhandledException(args.ExceptionObject);
+        // catch dispatcher unhandled exceptions
         Current.DispatcherUnhandledException += (_, args) => OnCatchUnhandledException(args.Exception);
-        
-        // load config
-        var configFile = Path.Combine(ConfigDirectory, $"{AppId}.json");
-        _configFile = configFile;
-        try
-        {
-            if (File.Exists(configFile))
-            {
-                var jsonText = File.ReadAllText(configFile);
-                var deserializedConfig = JsonSerializer.Deserialize<Config>(jsonText, JsonOptions);
-                if (deserializedConfig == null) OnInitError("Config", "Invalid config content");
-                Config = deserializedConfig!;
-            }
-            else
-            {
-                FirstStart = true;
-                File.Create(configFile).Close();
-                SaveConfig();
-            }
-        }
-        catch (Exception e)
-        {
-            OnInitError("Config", $"Error while reading/creating config file:\n{e}");
-            throw;
-        }
 
+        {   // get executable path
+            var executableFile = Environment.ProcessPath;
+            if (executableFile == null) OnInitError("配置", "可执行文件目录不可用");
+            ExecutableFilePath = Path.GetFullPath(executableFile!);
+            ConfigDirectory = Path.GetDirectoryName(executableFile)!;
+        }
+        
+        {   // single instance
+            var current = Process.GetCurrentProcess();
+            var currentSessionId = current.SessionId;
+            var match = false;
+            foreach (var process in Process.GetProcessesByName(current.ProcessName))
+            {
+                if (process.SessionId == currentSessionId
+                    && Path.GetDirectoryName(process.MainModule?.FileName) is { } directory
+                    && directory == ConfigDirectory)
+                {
+                    if (match) OnInitError("进程",
+                        "已有相同实例正在运行，若要同时运行多个实例，请将可执行文件置于不同的目录中" +
+                        $"\n当前目录: {directory}\n会话 ID: {currentSessionId}");
+                    match = true;
+                }
+            }
+        }
+        
+        {   // load config
+            var configFile = Path.Combine(ConfigDirectory, $"{AppId}.json");
+            _configFile = configFile;
+            try
+            {
+                if (File.Exists(configFile))
+                {
+                    var jsonText = File.ReadAllText(configFile);
+                    var deserializedConfig = JsonSerializer.Deserialize<Config>(jsonText, JsonOptions);
+                    if (deserializedConfig == null) OnInitError("配置", "非法的配置文件内容");
+                    Config = deserializedConfig!;
+                }
+                else
+                {
+                    FirstStart = true;
+                    File.Create(configFile).Close();
+                    SaveConfig();
+                }
+            }
+            catch (Exception e)
+            {
+                OnInitError("配置", $"读取/写入配置文件时出现异常:\n{e}");
+            }
+        }
+        
         InitializeComponent();
 
         // setup resources
@@ -139,7 +160,7 @@ public partial class App
         // update icons
 
         var iconName = SystemLightTheme ? "appicon_light.ico" : "appicon_dark.ico";
-        _taskbarIcon!.UpdateIcon(new Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream));
+        _taskbarIcon!.UpdateIcon(new System.Drawing.Icon(GetResourceStream(new Uri($"pack://application:,,,/assets/{iconName}"))!.Stream));
 
         // update theme & color scheme
 
@@ -155,23 +176,24 @@ public partial class App
     internal static void OnCatchUnhandledException(object e)
     {
         var content = e.ToString();
-        File.WriteAllText(Path.Combine(ConfigDirectory, $"{AppId}_Exception.txt"), content);
+        var logFileName = $"{AppId}_Exception.txt";
+        File.WriteAllText(Path.Combine(ConfigDirectory, logFileName), content);
         MessageBox.Show(
-            text: content,
-            caption: $"Unhandled Exception - {AppName}",
-            buttons: MessageBoxButton.OK,
+            messageBoxText: $"如果要寻求帮助，请发送这个窗口的截图或程序目录中的 \"{logFileName}\" 文件\n{content}",
+            caption: $"未捕获的异常 - {AppName}",
+            button: MessageBoxButton.OK,
             icon: MessageBoxImage.Error);
-        OnExit();
+        Process.GetCurrentProcess().Kill();
     }
 
     internal static void OnInitError(string type, string message)
     {
         MessageBox.Show(
-            text: $"[{type}] {message}",
+            messageBoxText: $"如果要寻求帮助，请发送这个窗口的截图\n[{type}] {message}",
             caption: $"初始化出错 - {AppName}",
-            buttons: MessageBoxButton.OK,
+            button: MessageBoxButton.OK,
             icon: MessageBoxImage.Error);
-        OnExit();
+        Process.GetCurrentProcess().Kill();
     }
 
     internal static void OnExit()
