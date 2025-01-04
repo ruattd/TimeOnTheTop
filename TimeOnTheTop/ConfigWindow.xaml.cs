@@ -2,11 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Win32;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace TimeOnTheTop;
 
@@ -21,7 +16,13 @@ public partial class ConfigWindow
 
         UpdateContents();
 
-        if (App.FirstStart) CheckAndSetStartup();
+        if (App.FirstStart)
+        {
+            var args = Environment.GetCommandLineArgs();
+            var autostart = args.Length > 0 && args[0].Equals("autostart", StringComparison.OrdinalIgnoreCase);
+            _ = RegistryConfigWindow.CheckAndSetStartup(this, !autostart);
+            App.FirstStart = false;
+        }
     }
 
     public static ConfigWindow? Current { get; private set; }
@@ -116,45 +117,6 @@ public partial class ConfigWindow
         base.OnClosed(e);
         Current = null;
         App.SetEfficiencyMode(true);
-    }
-
-    // UTILITIES
-
-    private async void CheckAndSetStartup()
-    {
-        var order = -1;
-        // check
-        var isSet = await Task.Run(() =>
-        {
-            var r = false;
-            foreach (var name in App.StartupKey.GetValueNames())
-            {
-                if (!name.StartsWith("TimeOnTheTop")) continue;
-                if (App.StartupKey.GetValue(name) is string value && value == App.ExecutableFilePath)
-                {
-                    r = true;
-                    break;
-                }
-                if (name.Length > 12)
-                {
-                    var ns = name[12..];
-                    if (int.TryParse(ns, out var n) && n > order) order = n;
-                }
-            }
-            return r;
-        });
-        if (isSet) return;
-        // add startup registry
-        var result = MessageBox.Show(this,
-            text: "是否向注册表添加启动项？",
-            caption: App.AppName,
-            buttons: MessageBoxButton.YesNo,
-            icon: MessageBoxImage.Question);
-        if (result == MessageBoxResult.Yes)
-        {
-            App.StartupKey.SetValue($"TimeOnTheTop{order+1}", App.ExecutableFilePath, RegistryValueKind.String);
-        }
-        App.FirstStart = false;
     }
 
     // EVENTS
@@ -257,5 +219,10 @@ public partial class ConfigWindow
     private void TextBox_OnPreviewTextInput_Integer(object sender, TextCompositionEventArgs e)
     {
         e.Handled = !int.TryParse(e.Text, out _);
+    }
+
+    private void ButtonStartupManager_OnClick(object sender, RoutedEventArgs e)
+    {
+        new RegistryConfigWindow(this).ShowDialog();
     }
 }

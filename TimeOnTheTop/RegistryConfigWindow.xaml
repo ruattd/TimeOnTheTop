@@ -1,0 +1,98 @@
+﻿<Window x:Class="TimeOnTheTop.RegistryConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TimeOnTheTop"
+        mc:Ignorable="d"
+        Height="400" Width="600">
+
+    <Window.Style>
+        <!-- use adonis theme -->
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+
+    <Window.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}" x:Key="LocalButtonSelectedItem">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Source={x:Reference ListBoxStartupItems}, Path=SelectedItem}" Value="{x:Null}">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="5">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="120"/>
+        </Grid.ColumnDefinitions>
+
+        <ListBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="5" BorderThickness="1"
+                 x:Name="ListBoxStartupItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ItemsSource="{Binding Source={x:Static local:RegistryConfigWindow.Items}}">
+            <ListBox.ItemTemplate>
+                <!-- item template -->
+                <DataTemplate>
+                    <Grid Margin="5">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+            
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                                   Text="{Binding Path}"
+                                   FontSize="14" FontWeight="Bold"
+                                   TextTrimming="CharacterEllipsis"/>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                            <TextBlock Text="ORDER "/>
+                            <TextBlock Text="{Binding OrderString}"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding IsCurrentString}"
+                                   TextAlignment="Right" Foreground="#F60"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2"
+                                   Text="{Binding IsRunningString}"
+                                   TextAlignment="Right" Foreground="#0F0"/>
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+            <Button Content="删除" Click="ButtonDeleteSelected_OnClick"
+                    Style="{StaticResource LocalButtonSelectedItem}"/>
+            <Button Content="更改 ORDER" Click="ButtonReorderSelected_OnClick"
+                    Style="{StaticResource LocalButtonSelectedItem}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+            <Button Content="创建新实例..." Click="ButtonCreateNew_OnClick"/>
+            <Button Content="添加当前实例" Click="ButtonAddCurrent_OnClick"/>
+            <Button Content="刷新" Click="ButtonReload_OnClick"/>
+        </StackPanel>
+
+    </Grid>
+
+</Window>

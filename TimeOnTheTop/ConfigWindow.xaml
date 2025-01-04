@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TimeOnTheTop" 
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:local="clr-namespace:TimeOnTheTop"
         mc:Ignorable="d"
         KeyUp="Window_OnKey" KeyDown="Window_OnKey"
         Height="450" Width="800">
@@ -77,6 +76,7 @@
 
     <!-- main layout -->
     <Grid>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="46"/>
@@ -198,7 +198,6 @@
                     <TextBox x:Name="TextBoxExpression" Width="Auto"/>
                 </DockPanel>
 
-                <!-- TODO options -->
             </StackPanel>
         </ScrollViewer>
 
@@ -208,6 +207,8 @@
             <DockPanel Margin="5" Height="36">
                 <TextBlock x:Name="AppNameLabel"/>
                 <StackPanel HorizontalAlignment="Right">
+                    <Button Content="启动项管理" Width="120" Click="ButtonStartupManager_OnClick"/>
+                    <Rectangle Width="1" Height="20" Margin="5" Fill="#777"/>
                     <Button Content="确定" Click="ButtonOK_OnClick"/>
                     <Button Content="取消" Click="ButtonCancel_OnClick" x:Name="ButtonCancel"/>
                     <Button Content="应用" Click="ButtonApply_OnClick" IsEnabled="False" x:Name="ButtonApply"/>
