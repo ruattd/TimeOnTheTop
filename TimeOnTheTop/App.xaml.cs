@@ -9,6 +9,8 @@ using Microsoft.Win32;
 
 namespace TimeOnTheTop;
 
+// ReSharper disable StringLiteralTypo
+
 public partial class App
 {
     private static string _configFile = "";
@@ -149,7 +151,7 @@ public partial class App
         _taskbarIcon.ForceCreate();
     }
 
-    private void OnSystemThemeChanged()
+    private static void OnSystemThemeChanged()
     {
         // get system theme config
 
@@ -164,7 +166,7 @@ public partial class App
 
         // update theme & color scheme
 
-        WindowHelper.SetPreferredAppMode(AppLightTheme ? WindowHelper.APPMODE_LIGHT : WindowHelper.APPMODE_DARK);
+        _ = WindowHelper.SetPreferredAppMode(AppLightTheme ? WindowHelper.APPMODE_LIGHT : WindowHelper.APPMODE_DARK);
         WindowHelper.FlushMenuThemes();
         ResourceLocator.SetColorScheme(Current.Resources,
             AppLightTheme ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
