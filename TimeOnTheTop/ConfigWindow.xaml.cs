@@ -33,7 +33,7 @@ public partial class ConfigWindow
         {
             var window = new ConfigWindow();
             window.Show();
-            window.UpdateWindowTheme(); // update theme
+            App.UpdateWindowTheme(window); // update theme
             App.SetEfficiencyMode(false);
             Current = window;
         }
@@ -41,23 +41,6 @@ public partial class ConfigWindow
     }
 
     // CONTENT UPDATES
-
-    internal void UpdateWindowTheme()
-    {
-        var light = App.AppLightTheme;
-
-        Dispatcher.BeginInvoke(() =>
-        {
-            // window framework
-            WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(this), !light);
-
-            // children
-            foreach (Window child in OwnedWindows)
-            {
-                WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(child), !light);
-            }
-        });
-    }
 
     private void UpdateContents()
     {

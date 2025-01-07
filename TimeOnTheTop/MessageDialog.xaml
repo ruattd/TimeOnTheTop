@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TimeOnTheTop"
         mc:Ignorable="d" MinWidth="400" SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        d:DesignHeight="300" d:DesignWidth="600">
+        d:DesignHeight="200" d:DesignWidth="600">
 
     <Window.Style>
         <!-- use adonis theme -->
@@ -38,7 +38,7 @@
         </Grid>
 
         <Grid Grid.Row="1" Background="#4888">
-            <StackPanel x:Name="StackPanelButtons" Margin="5" Orientation="Horizontal"
+            <StackPanel x:Name="StackPanelButtons" Margin="10,0" Orientation="Horizontal"
                         VerticalAlignment="Center" HorizontalAlignment="Right"/>
         </Grid>
 

@@ -125,6 +125,12 @@ public partial class RegistryConfigWindow
         return false;
     }
 
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(this), !App.AppLightTheme);
+    }
+
     private void ButtonReload_OnClick(object sender, RoutedEventArgs e)
     {
         Dispatcher.InvokeAsync(UpdateItems);

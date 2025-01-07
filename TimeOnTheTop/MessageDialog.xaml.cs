@@ -38,6 +38,12 @@ public partial class MessageDialog
         InitializeComponent();
     }
 
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(this), !App.AppLightTheme);
+    }
+
     public void AddContent(params UIElement[] elements)
     {
         foreach (var element in elements) StackPanelContent.Children.Add(element);

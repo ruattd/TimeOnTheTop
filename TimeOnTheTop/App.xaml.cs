@@ -81,6 +81,18 @@ public partial class App
 #pragma warning restore CA1416 
         }
     }
+
+    internal static void UpdateWindowTheme(Window window)
+    {
+        window.Dispatcher.BeginInvoke(() =>
+        {
+            // window framework
+            WindowHelper.SetWindowFrameworkDarkMode(WindowHelper.GetHandle(window), !AppLightTheme);
+
+            // children
+            foreach (Window child in window.OwnedWindows) UpdateWindowTheme(child);
+        });
+    }
     
     public App()
     {
@@ -172,7 +184,7 @@ public partial class App
             AppLightTheme ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
 
         var cfgWindow = ConfigWindow.Current;
-        if (cfgWindow?.IsInitialized == true) cfgWindow.UpdateWindowTheme();
+        if (cfgWindow?.IsInitialized == true) UpdateWindowTheme(cfgWindow);
     }
 
     internal static void OnCatchUnhandledException(object e)
