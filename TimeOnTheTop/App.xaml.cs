@@ -178,7 +178,7 @@ public partial class App
     internal static void OnCatchUnhandledException(object e)
     {
         var content = e.ToString();
-        var logFileName = $"{AppId}_Exception.txt";
+        const string logFileName = $"{AppId}_Exception.txt";
         File.WriteAllText(Path.Combine(ConfigDirectory, logFileName), content);
         MessageBox.Show(
             messageBoxText: $"如果要寻求帮助，请发送这个窗口的截图或程序目录中的 \"{logFileName}\" 文件\n{content}",
