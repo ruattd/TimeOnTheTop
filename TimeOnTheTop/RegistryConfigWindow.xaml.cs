@@ -4,10 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace TimeOnTheTop;
 
@@ -72,12 +68,9 @@ public partial class RegistryConfigWindow
         var key = $"{App.AppId}_{order + 1}";
         if (showMessage)
         {
-            var result = MessageBox.Show(owner,
-                text: $"是否添加启动项 [{key}]",
-                caption: App.AppName,
-                buttons: MessageBoxButton.YesNo,
-                icon: MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes) return true;
+            var result = MessageDialog.Show(
+                $"是否添加启动项 [{key}]", owner, MessageDialog.ButtonYesNo);
+            if (result != MessageDialog.ResultYes) return true;
         }
         App.StartupKey.SetValue(key, App.ExecutableFilePath, RegistryValueKind.String);
         return true;
@@ -145,7 +138,7 @@ public partial class RegistryConfigWindow
         {
             var successful = await CheckAndSetStartup(this);
             if (successful) UpdateItems();
-            else MessageBox.Show(this, text: "当前实例的启动项已存在", caption: App.AppName);
+            else MessageDialog.Show("当前实例的启动项已存在", this);
             button.IsEnabled = true;
         });
     }
@@ -163,12 +156,8 @@ public partial class RegistryConfigWindow
             if (selected == null) return;
             var key = $"{App.AppId}_{selected.Order}";
 
-            var result = MessageBox.Show(this,
-                text: $"是否删除启动项 [{key}]",
-                caption: App.AppName,
-                buttons: MessageBoxButton.YesNo,
-                icon: MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes) return;
+            var result = MessageDialog.Show($"是否删除启动项 [{key}]", this, MessageDialog.ButtonYesNo);
+            if (result != MessageDialog.ResultYes) return;
 
             App.StartupKey.DeleteValue(key);
             UpdateItems();

@@ -22,7 +22,6 @@
     <PackageReference Include="AdonisUI" Version="1.17.1" />
     <PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.2.0" />
-    <PackageReference Include="MessageWindowWPF" Version="1.1.0" />
     <PackageReference Include="PixiEditor.ColorPicker" Version="3.4.1" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
