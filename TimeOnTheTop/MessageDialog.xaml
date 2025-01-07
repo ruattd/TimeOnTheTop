@@ -15,9 +15,8 @@
 
     <Window.Resources>
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Margin" Value="5"/>
             <Setter Property="MinWidth" Value="80"/>
-            <Setter Property="MinHeight" Value="30"/>
         </Style>
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontSize" Value="13"/>
@@ -28,7 +27,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*" MinHeight="80"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -39,7 +38,7 @@
         </Grid>
 
         <Grid Grid.Row="1" Background="#4888">
-            <StackPanel x:Name="StackPanelButtons" Margin="8" Orientation="Horizontal"
+            <StackPanel x:Name="StackPanelButtons" Margin="5" Orientation="Horizontal"
                         VerticalAlignment="Center" HorizontalAlignment="Right"/>
         </Grid>
 
